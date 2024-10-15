@@ -1,0 +1,14 @@
+
+services:
+  mysql:
+    image: mysql:8.0.23
+    container_name: blog-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: batman
+      MYSQL_PASSWORD: robin
+    ports:
+      - "3306:3306"
+ 
