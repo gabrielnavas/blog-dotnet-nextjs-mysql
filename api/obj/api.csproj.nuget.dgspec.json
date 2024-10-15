@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/navas/Projects/fullstack-projects/blog-dotnet-nextjs-mysql/api/api.csproj": {}
+    "/home/navas/Projects/blog-dotnet-nextjs-mysql/api/api.csproj": {}
   },
   "projects": {
-    "/home/navas/Projects/fullstack-projects/blog-dotnet-nextjs-mysql/api/api.csproj": {
+    "/home/navas/Projects/blog-dotnet-nextjs-mysql/api/api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/navas/Projects/fullstack-projects/blog-dotnet-nextjs-mysql/api/api.csproj",
+        "projectUniqueName": "/home/navas/Projects/blog-dotnet-nextjs-mysql/api/api.csproj",
         "projectName": "api",
-        "projectPath": "/home/navas/Projects/fullstack-projects/blog-dotnet-nextjs-mysql/api/api.csproj",
+        "projectPath": "/home/navas/Projects/blog-dotnet-nextjs-mysql/api/api.csproj",
         "packagesPath": "/home/navas/.nuget/packages/",
-        "outputPath": "/home/navas/Projects/fullstack-projects/blog-dotnet-nextjs-mysql/api/obj/",
+        "outputPath": "/home/navas/Projects/blog-dotnet-nextjs-mysql/api/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/navas/.nuget/NuGet/NuGet.Config"

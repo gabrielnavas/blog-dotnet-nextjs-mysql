@@ -35,5 +35,17 @@ namespace api
       await _context.AddAsync(user);
       await _context.SaveChangesAsync();
     }
+
+    public async Task<UserDto> FindUserByEmail(string email)
+    {
+      User user = await _context.User
+      .Where(user => user.Email.ToLower() == email)
+      .FirstOrDefaultAsync();
+      if (user == null)
+      {
+        throw new UserNotFoundException("Usuário não encontrado com esse e-mail");
+      }
+      return new UserDto(user.Fullname, user.Email, user.Role);
+    }
   }
 }

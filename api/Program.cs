@@ -6,7 +6,22 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//cors
+var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+    policy =>
+    {   
+        // TODO: mudar isso para ambiente de produção
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 
+
+// politicas e regras de autorizacao
 builder.Services.AddAuthorization(options =>
       {
           options.AddPolicy("Admin", policy => policy.RequireRole(Role.Admin.ToString()));
@@ -54,6 +69,8 @@ builder.Services.AddDbContext<BloggingContext>(options =>
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthentication();
 app.UseAuthorization();

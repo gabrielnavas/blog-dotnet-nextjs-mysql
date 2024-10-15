@@ -21,36 +21,6 @@ namespace api.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("api.Blog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("description");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("title");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("blogs");
-                });
-
             modelBuilder.Entity("api.Post", b =>
                 {
                     b.Property<int>("Id")
@@ -60,22 +30,27 @@ namespace api.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BlogId")
-                        .HasColumnType("int")
-                        .HasColumnName("blog_id");
-
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("longtext")
                         .HasColumnName("content");
 
+                    b.Property<string>("ImageName")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("image_name");
+
                     b.Property<int>("Likes")
                         .HasColumnType("int")
                         .HasColumnName("likes");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("BlogId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("posts");
                 });
@@ -114,7 +89,7 @@ namespace api.Migrations
                     b.ToTable("users");
                 });
 
-            modelBuilder.Entity("api.Blog", b =>
+            modelBuilder.Entity("api.Post", b =>
                 {
                     b.HasOne("api.User", "User")
                         .WithMany()
@@ -123,17 +98,6 @@ namespace api.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("api.Post", b =>
-                {
-                    b.HasOne("api.Blog", "Blog")
-                        .WithMany()
-                        .HasForeignKey("BlogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Blog");
                 });
 #pragma warning restore 612, 618
         }

@@ -5,7 +5,6 @@ namespace api
   [Table("posts")]
   public class Post
   {
-
     [Column("id")]
     public int Id { get; set; }
 
@@ -15,8 +14,11 @@ namespace api
     [Column("likes")]
     public int Likes { get; set; }
 
-   [Column("blog_id")]
-    public int BlogId { get; set; }
-    public Blog Blog { get; set; }
+    [Column("image_name")]
+    public string ImageName { get; set; }
+
+    [Column("user_id")]
+    public int UserId { get; set; }
+    public User User { get; set; }
   }
 }

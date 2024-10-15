@@ -64,9 +64,11 @@ namespace api
       try
       {
         string token = await _authService.SignIn(dto);
+        UserDto user = await _userService.FindUserByEmail(dto.Email);
         return Ok(new
         {
-          token = token
+          token,
+          user
         });
       }
       catch (UserNotFoundException ex)

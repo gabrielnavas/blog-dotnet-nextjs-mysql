@@ -6,7 +6,6 @@ namespace api
   public class BloggingContext : DbContext
   {
     public DbSet<User> User { get; set; }
-    public DbSet<Blog> Blog { get; set; }
     public DbSet<Post> Post { get; set; }
 
     public BloggingContext(DbContextOptions<BloggingContext> options) : base(options) { }

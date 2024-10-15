@@ -36,30 +36,6 @@ namespace api.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "blogs",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    title = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    description = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    user_id = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_blogs", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_blogs_users_user_id",
-                        column: x => x.user_id,
-                        principalTable: "users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "posts",
                 columns: table => new
                 {
@@ -68,29 +44,26 @@ namespace api.Migrations
                     content = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     likes = table.Column<int>(type: "int", nullable: false),
-                    blog_id = table.Column<int>(type: "int", nullable: false)
+                    image_name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    user_id = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_posts", x => x.id);
                     table.ForeignKey(
-                        name: "FK_posts_blogs_blog_id",
-                        column: x => x.blog_id,
-                        principalTable: "blogs",
+                        name: "FK_posts_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_blogs_user_id",
-                table: "blogs",
-                column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_posts_blog_id",
+                name: "IX_posts_user_id",
                 table: "posts",
-                column: "blog_id");
+                column: "user_id");
         }
 
         /// <inheritdoc />
@@ -98,9 +71,6 @@ namespace api.Migrations
         {
             migrationBuilder.DropTable(
                 name: "posts");
-
-            migrationBuilder.DropTable(
-                name: "blogs");
 
             migrationBuilder.DropTable(
                 name: "users");

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "IvHeHZs7QtvgrdHc/DkYtHb5RKY6aHX2k55JsvQtP8ZVQe+6NVC5Rg3rmWsocCm76kJUhnyHyQnA3o7ZMe83vw==",
+  "dgSpecHash": "jk6rbUfpqXifYcyR1EktPYIhnHbXxNdUbIuiBTw5U2Tn6ZQskPPKUcOMCT09oecN5h73lIh7R4TaeMPZy5PTMQ==",
   "success": true,
-  "projectFilePath": "/home/navas/Projects/fullstack-projects/blog-dotnet-nextjs-mysql/api/api.csproj",
+  "projectFilePath": "/home/navas/Projects/blog-dotnet-nextjs-mysql/api/api.csproj",
   "expectedPackageFiles": [
     "/home/navas/.nuget/packages/bcrypt.net-next/4.0.3/bcrypt.net-next.4.0.3.nupkg.sha512",
     "/home/navas/.nuget/packages/bouncycastle.cryptography/2.3.1/bouncycastle.cryptography.2.3.1.nupkg.sha512",
