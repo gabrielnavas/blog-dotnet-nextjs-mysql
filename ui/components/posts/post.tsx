@@ -3,11 +3,12 @@ import React, { useEffect, useState } from "react";
 import { AuthContext, AuthContextType } from "@/contexts/auth-context";
 import { downloadPostImage } from "@/services/download-post-image";
 
-import { Card, CardContent } from "../ui/card";
+import { Card, CardContent, CardFooter } from "../ui/card";
 import { Post as PostModel, User } from "@/services/models";
 import Image from "next/image";
-import { LoaderCircle } from "lucide-react";
+import { LoaderCircle, ThumbsUp } from "lucide-react";
 import { findUserById } from "@/services/find-user-by-id";
+import { Button } from "../ui/button";
 
 type Props = {
   post: PostModel
@@ -118,6 +119,11 @@ export const Post: React.FC<Props> = ({ post }) => {
           }
         </div>
       </CardContent>
+      <CardFooter className="flex justify-end">
+        <Button className="ps-6 pe-6" variant='outline'>
+          <ThumbsUp size={15} />
+        </Button>
+      </CardFooter>
     </Card>
   )
 }
