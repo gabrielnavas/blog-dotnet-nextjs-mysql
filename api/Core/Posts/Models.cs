@@ -15,7 +15,7 @@ namespace api
     public int Likes { get; set; }
 
     [Column("image_name")]
-    public string ImageName { get; set; }
+    public string? ImageName { get; set; }
 
     [Column("user_id")]
     public int UserId { get; set; }

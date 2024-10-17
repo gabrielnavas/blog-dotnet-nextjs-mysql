@@ -7,12 +7,12 @@ using Microsoft.IdentityModel.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 
 //cors
-var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
     policy =>
-    {   
+    {
         // TODO: mudar isso para ambiente de produção
         policy.AllowAnyOrigin()
               .AllowAnyMethod()
@@ -35,7 +35,8 @@ builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSet
 // obter a chave em array de bytes
 var appSettings = builder.Configuration.GetSection("AppSettings").Get<AppSettings>();
 var key = Encoding.ASCII.GetBytes(appSettings.JwtKey);
-// adicionar autenticacao
+
+// adicionar filtro de autenticacao JWT
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -59,6 +60,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPostService, PostServices>();
 
 // injetar o context
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

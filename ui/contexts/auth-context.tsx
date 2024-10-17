@@ -27,7 +27,7 @@ type Props = {
   children: React.ReactNode
 }
 
-export const AuthtProvider: React.FC<Props> = ({ children }) => {
+export const AuthProvider: React.FC<Props> = ({ children }) => {
 
   const [data, setData] = React.useState<AuthContextType>(inititalData)
 

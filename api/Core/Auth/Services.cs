@@ -24,7 +24,7 @@ namespace api
         throw new UserNotFoundException("Email ou Senha incorreto");
       }
 
-      var tokenParams = new GenerateTokenDto(user.Email, user.Role);
+      var tokenParams = new GenerateTokenDto(user.Id, user.Role);
       string token = _tokenService.GenerateTokenAsync(tokenParams);
       return token;
     }

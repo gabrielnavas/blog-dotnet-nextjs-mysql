@@ -10,3 +10,10 @@ export type User = {
   email: string
   role: string
 }
+
+export type Post = {
+  id: string
+  userId: string
+  content: string
+  likes: number
+}

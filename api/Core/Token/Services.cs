@@ -23,7 +23,7 @@ namespace api
       var tokenDescriptor = new SecurityTokenDescriptor
       {
         Subject = new ClaimsIdentity(new[]{
-          new Claim(ClaimTypes.Name, dto.UserEmail),
+          new Claim(ClaimTypes.NameIdentifier, dto.UserId.ToString()),
           new Claim(ClaimTypes.Role, dto.UserRole.ToString())
         }),
         Expires = DateTime.UtcNow.AddDays(7),

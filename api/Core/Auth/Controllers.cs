@@ -54,10 +54,6 @@ namespace api
       }
     }
 
-    [HttpGet]
-    
-
-
     [HttpPost("signin")]
     public async Task<IActionResult> SignIn([FromBody] SignInDto dto)
     {

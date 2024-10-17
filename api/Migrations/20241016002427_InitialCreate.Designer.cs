@@ -11,7 +11,7 @@ using api;
 namespace api.Migrations
 {
     [DbContext(typeof(BloggingContext))]
-    [Migration("20241015215055_InitialCreate")]
+    [Migration("20241016002427_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -39,7 +39,6 @@ namespace api.Migrations
                         .HasColumnName("content");
 
                     b.Property<string>("ImageName")
-                        .IsRequired()
                         .HasColumnType("longtext")
                         .HasColumnName("image_name");
 

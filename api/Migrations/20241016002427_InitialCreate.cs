@@ -44,7 +44,7 @@ namespace api.Migrations
                     content = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     likes = table.Column<int>(type: "int", nullable: false),
-                    image_name = table.Column<string>(type: "longtext", nullable: false)
+                    image_name = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     user_id = table.Column<int>(type: "int", nullable: false)
                 },
