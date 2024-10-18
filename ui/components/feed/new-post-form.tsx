@@ -31,7 +31,7 @@ export const NewPostForm: React.FC = () => {
     resolver: zodResolver(formSchema)
   })
 
-  const { handleNewPost, isLoading, setIsLoading } = useContext(FeedContext) as FeedContextType
+  const { handleNewPost, isLoadingNewPost, setIsLoadingNewPost } = useContext(FeedContext) as FeedContextType
 
   const { toast } = useToast();
   const route = useRouter()
@@ -43,7 +43,7 @@ export const NewPostForm: React.FC = () => {
 
   const onSubmit = useCallback(async ({ content }: FormSchema) => {
     try {
-      setIsLoading(true);
+      setIsLoadingNewPost(true);
       await handleNewPost(content, image);
       setImage(undefined);
       form.reset({
@@ -71,9 +71,9 @@ export const NewPostForm: React.FC = () => {
         })
       }
     } finally {
-      setIsLoading(false);
+      setIsLoadingNewPost(false);
     }
-  }, [image, toast, handleNewPost, form, route, setIsLoading])
+  }, [image, toast, handleNewPost, form, route, setIsLoadingNewPost])
 
   return (
     <Card className="w-[550px]">
@@ -99,13 +99,14 @@ export const NewPostForm: React.FC = () => {
             />
             <div className="flex justify-end gap-4 pt-2">
               <input
+                disabled={isLoadingNewPost}
                 hidden
                 ref={ref}
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
               />
-              <Button disabled={isLoading} type="button" onClick={() => ref.current?.click()}>
+              <Button disabled={isLoadingNewPost} type="button" onClick={() => ref.current?.click()}>
                 <Image />
               </Button>
               <Button className="font-semibold">Postar</Button>

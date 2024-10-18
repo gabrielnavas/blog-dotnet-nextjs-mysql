@@ -2,7 +2,7 @@
 
 import { Post } from "@/services/models";
 import { newPost } from "@/services/new-post";
-import React, { useCallback, useContext, useEffect } from "react";
+import React, { useCallback, useContext } from "react";
 import { AuthContext, AuthContextType } from "./auth-context";
 import { BadRequestException, UnauthorizedException } from "@/lib/exceptions";
 import { updatePostImage } from "@/services/update-post-image";
@@ -10,16 +10,26 @@ import { findPosts } from "@/services/find-posts";
 
 export type FeedContextType = {
   posts: Post[]
-  isLoading: boolean
-  setIsLoading: (isLoading: boolean) => void
+
+  isLoadingNewPost: boolean
+  isLoadingFindPosts: boolean
+  setIsLoadingNewPost: (isLoading: boolean) => void,
+  setIsLoadingFindPosts: (isLoading: boolean) => void,
+
+  handleLoadPosts: () => Promise<void>
   handleNewPost: (content: string, image?: File) => Promise<void>
+  handleLike: (postId: string) => Promise<void>
 }
 
 const inititalData = {
   posts: [],
-  isLoading: false,
-  setIsLoading: () => { },
-  handleNewPost: () => Promise.resolve()
+  isLoadingNewPost: false,
+  isLoadingFindPosts: false,
+  setIsLoadingNewPost: () => Promise.resolve(),
+  setIsLoadingFindPosts: () => Promise.resolve(),
+  handleLoadPosts: () => Promise.resolve(),
+  handleNewPost: () => Promise.resolve(),
+  handleLike: () => Promise.resolve(),
 } as FeedContextType
 
 export const FeedContext = React.createContext<FeedContextType | null>(null)
@@ -33,34 +43,35 @@ export const FeedProvider: React.FC<Props> = ({ children }) => {
 
   const { token } = useContext(AuthContext) as AuthContextType
 
-  useEffect(() => {
-    if (!token) {
-      return;
-    }
-    (async () => {
-      const result = await findPosts(token)()
-      if (result.IsUnauthorized) {
-        throw new UnauthorizedException();
-      }
-      else if (result.error) {
-        throw new BadRequestException(result.message || 'Algo aconteceu!');
-      } else if (!result.data) {
-        throw new BadRequestException('Algo aconteceu!');
-      } else {
-        setData(prev => ({
-          ...prev,
-          posts: result.data!.posts,
-        }))
-      }
-    })()
-  }, [token])
-
-  const setIsLoading = useCallback((isLoading: boolean) => {
-    setData(prev => ({
-      ...prev,
-      isLoading,
-    }))
+  const setIsLoadingNewPost = useCallback((isLoading: boolean) => {
+    setData(prev => ({ ...prev, isLoadingNewPost: isLoading }))
   }, [])
+
+
+  const setIsLoadingFindPosts = useCallback((isLoading: boolean) => {
+    setData(prev => ({ ...prev, isLoadingFindPosts: isLoading }))
+  }, [])
+
+
+  const handleLoadPosts = useCallback(async () => {
+    if (typeof token !== 'string' || token.length === 0) {
+      return
+    }
+    const result = await findPosts(token)()
+    if (result.IsUnauthorized) {
+      throw new UnauthorizedException();
+    }
+    else if (result.error) {
+      throw new BadRequestException(result.message || 'Algo aconteceu!');
+    } else if (!result.data) {
+      throw new BadRequestException('Algo aconteceu!');
+    } else {
+      setData(prev => ({
+        ...prev,
+        posts: result.data!.posts,
+      }))
+    }
+  }, [token])
 
   const handleNewPost = useCallback(async (content: string, image?: File) => {
     if (!token) {
@@ -91,19 +102,30 @@ export const FeedProvider: React.FC<Props> = ({ children }) => {
         const newPost = { ...resultNewPost.data.post }
         setData(prev => ({
           ...prev,
-          posts: [newPost]
+          posts: [newPost, ...prev.posts]
         }))
       }
     }
   }, [token])
 
+  const handleLike = useCallback(async (postId: string): Promise<void> => {
+    alert(postId);
+  }, [])
+
 
   return (
     <FeedContext.Provider value={{
       posts: data.posts,
-      isLoading: data.isLoading,
-      handleNewPost: handleNewPost,
-      setIsLoading: setIsLoading,
+
+      isLoadingNewPost: data.isLoadingNewPost,
+      isLoadingFindPosts: data.isLoadingFindPosts,
+
+      setIsLoadingNewPost,
+      setIsLoadingFindPosts,
+
+      handleLoadPosts,
+      handleNewPost,
+      handleLike,
     }}>
       {children}
     </FeedContext.Provider>

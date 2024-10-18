@@ -124,15 +124,17 @@ namespace api
 
     public async Task<List<PostDto>> FindPosts(int userId)
     {
-      return _context.Post.Where(post => post.UserId == userId)
-       .Select(post => new PostDto(
+      return _context.Post
+      .Where(post => post.UserId == userId)
+      .OrderByDescending(post => post.Id)
+      .Skip(0)
+      .Take(10)
+      .Select(post => new PostDto(
          post.Id,
          post.Content,
          post.UserId,
          post.Likes
        ))
-       .Take(10)
-       .Skip(0)
        .ToList();
     }
   }

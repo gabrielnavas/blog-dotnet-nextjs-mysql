@@ -1,3 +1,4 @@
+import { isValidUrl } from "@/lib/utils"
 import { ServiceResult } from "./models"
 
 type DownloadPostImageParams = {
@@ -9,7 +10,7 @@ type DownloadPostImageResult = {
 }
 
 
-export const downloadPostImage = (token: string) => async (params: DownloadPostImageParams): Promise<ServiceResult<DownloadPostImageResult>> => {
+export const downloadPostImage = (token: string) => async (params: DownloadPostImageParams): Promise<ServiceResult<DownloadPostImageResult | undefined>> => {
   const url = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/post/${params.postId}/image`
 
   const response = await fetch(url, {
@@ -34,10 +35,18 @@ export const downloadPostImage = (token: string) => async (params: DownloadPostI
 
   const blob: Blob = await response.blob();
 
+  const imageUrl = URL.createObjectURL(blob);
+  if (isValidUrl(imageUrl)) {
+    return {
+      error: false,
+      data: {
+        imageUrl,
+      }
+    }
+  }
+
   return {
     error: false,
-    data: {
-      imageUrl: URL.createObjectURL(blob)
-    }
+    data: undefined
   }
 }
