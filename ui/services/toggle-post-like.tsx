@@ -1,11 +1,11 @@
 import { ServiceResult } from "./models"
 
-type IncrementPostLikeParams = {
+type TogglePostLikeParams = {
   postId: string
 }
 
-export const incrementPostLike = (token: string) => async (params: IncrementPostLikeParams): Promise<ServiceResult<void>> => {
-  const url = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/post/${params.postId}/like/increment`
+export const togglePostLike = (token: string) => async (params: TogglePostLikeParams): Promise<ServiceResult<void>> => {
+  const url = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/post/${params.postId}/like`
   const response = await fetch(url, {
     method: "PATCH",
     headers: {

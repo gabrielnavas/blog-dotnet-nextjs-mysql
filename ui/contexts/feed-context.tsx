@@ -7,7 +7,7 @@ import { AuthContext, AuthContextType } from "./auth-context";
 import { BadRequestException, UnauthorizedException } from "@/lib/exceptions";
 import { updatePostImage } from "@/services/update-post-image";
 import { findPosts } from "@/services/find-posts";
-import { incrementPostLike } from "@/services/increment-post-like";
+import { togglePostLike } from "@/services/toggle-post-like";
 
 export type FeedContextType = {
   posts: Post[]
@@ -113,7 +113,7 @@ export const FeedProvider: React.FC<Props> = ({ children }) => {
     if (typeof token !== 'string' || token.length === 0) {
       return;
     }
-    const result = await incrementPostLike(token)({ postId });
+    const result = await togglePostLike(token)({ postId });
     if (result.error) {
       if (result.IsUnauthorized) {
         throw new UnauthorizedException()
@@ -127,12 +127,19 @@ export const FeedProvider: React.FC<Props> = ({ children }) => {
       // TODO: Não deixar dar vários likes
       const postIndex = data.posts.findIndex(post => post.id === postId);
       const newPosts = [...data.posts];
-      newPosts[postIndex].likes++
+      if (postIndex >= 0) {
+        if (newPosts[postIndex].loggedUserLiked) {
+          newPosts[postIndex].likes--
+          newPosts[postIndex].loggedUserLiked = false;
+        } else {
+          newPosts[postIndex].likes++
+          newPosts[postIndex].loggedUserLiked = true;
+        }
+      }
       setData(prev => ({
         ...prev,
         posts: newPosts
-      })
-      );
+      }));
     }
   }, [token, data.posts])
 

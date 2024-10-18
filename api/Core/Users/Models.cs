@@ -17,5 +17,7 @@ namespace api
     public Role Role { get; set; }
     [Column("password_hash")]
     public string PasswordHash { get; set; }
+
+    public List<PostLike> PostLikes;
   }
 }

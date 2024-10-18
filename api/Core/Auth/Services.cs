@@ -16,7 +16,7 @@ namespace api
 
     public async Task<string> SignIn(SignInDto dto)
     {
-      var user = _context.User
+      var user = _context.Users
       .Where(user => user.Email.ToLower() == dto.Email.ToLower())
       .FirstOrDefault();
       if (user == null)

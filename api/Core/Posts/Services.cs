@@ -17,7 +17,7 @@ namespace api
 
     public async Task<PostDto> CreatePost(int userId, CreatePostDto dto)
     {
-      var user = _context.User.Where(user => user.Id == userId).FirstOrDefault();
+      var user = _context.Users.Where(user => user.Id == userId).FirstOrDefault();
       if (user == null)
       {
         throw new UserNotFoundException("Usuário não encontrado");
@@ -30,16 +30,16 @@ namespace api
         UserId = user.Id,
       };
 
-      await _context.Post.AddAsync(post);
+      await _context.Posts.AddAsync(post);
       await _context.SaveChangesAsync();
 
-      return new PostDto(post.Id, post.Content, post.UserId, post.Likes);
+      return new PostDto(post.Id, post.Content, post.UserId, post.Likes, false);
     }
 
     public async Task<PostDto> UpdatePostImage(int postId, IFormFile file)
     {
       // Busca o post de forma assíncrona
-      var post = _context.Post.FirstOrDefault(p => p.Id == postId);
+      var post = _context.Posts.FirstOrDefault(p => p.Id == postId);
       if (post == null)
       {
         throw new PostNotFoundException($"Post {postId} não encontrado");
@@ -82,14 +82,15 @@ namespace api
         post.Id,
         post.Content,
         post.UserId,
-        post.Likes
+        post.Likes,
+        false
       );
     }
 
     public async Task<(byte[] file, string imageName)> LoadPostImage(int postId)
     {
       // Busca o post de forma assíncrona
-      var post = _context.Post.FirstOrDefault(p => p.Id == postId);
+      var post = _context.Posts.FirstOrDefault(p => p.Id == postId);
       if (post == null)
       {
         throw new PostNotFoundException($"Post {postId} não encontrado");
@@ -124,7 +125,7 @@ namespace api
 
     public async Task<List<PostDto>> FindPosts(int userId)
     {
-      return _context.Post
+      return _context.Posts
       .Where(post => post.UserId == userId)
       .OrderByDescending(post => post.Id)
       .Skip(0)
@@ -133,20 +134,50 @@ namespace api
          post.Id,
          post.Content,
          post.UserId,
-         post.Likes
+         post.Likes,
+         post.PostLikes.Where(postLike => postLike.UserId == userId).Count() > 0
        ))
        .ToList();
     }
 
-    public async Task IncrementPost(int postId)
+    public async Task TogglePostLike(int userId, int postId)
     {
-      var post = _context.Post.Find(postId);
+      using var transaction = _context.Database.BeginTransaction();
+
+      var user = _context.Users.Find(userId);
+      if (user == null)
+      {
+        throw new UserNotFoundException($"Usuário não encontrado com o id {userId}");
+      }
+
+      var post = _context.Posts.Find(postId);
       if (post == null)
       {
         throw new PostNotFoundException($"Post não encontrado com o id {postId}");
       }
-      post.Likes = post.Likes + 1;
+
+      var postLike = _context.PostLikes.Where(postLike =>
+        postLike.UserId == user.Id
+        && postLike.PostId == post.Id)
+        .FirstOrDefault();
+      if (postLike == null)
+      {
+        postLike = new PostLike();
+        postLike.UserId = user.Id;
+        postLike.PostId = post.Id;
+        await _context.PostLikes.AddAsync(postLike);
+
+        post.Likes = post.Likes + 1;
+      }
+      else
+      {
+        _context.PostLikes.Remove(postLike);
+        post.Likes = post.Likes - 1;
+      }
+
       await _context.SaveChangesAsync();
+
+      transaction.Commit();
     }
   }
 }

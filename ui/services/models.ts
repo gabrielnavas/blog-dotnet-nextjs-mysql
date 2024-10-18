@@ -16,4 +16,5 @@ export type Post = {
   userId: string
   content: string
   likes: number
+  loggedUserLiked: boolean
 }

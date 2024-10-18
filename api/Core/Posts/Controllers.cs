@@ -58,13 +58,23 @@ namespace api
     }
 
 
-    [HttpPatch("{postId}/like/increment")]
+    [HttpPatch("{postId}/like")]
     [Authorize(Roles = "Admin,Manager,User")]
-    public async Task<IActionResult> IncrementPost(int postId)
+    public async Task<IActionResult> TogglePostLike(int postId)
     {
       try
       {
-        await _postService.IncrementPost(postId);
+        string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt))
+        {
+          return StatusCode(400, new
+          {
+            message = "Invalid user ID in the token."
+          });
+        }
+
+        await _postService.TogglePostLike(userIdInt, postId);
         return StatusCode(204);
       }
       catch (UserNotFoundException ex)
@@ -83,7 +93,6 @@ namespace api
         });
       }
     }
-
 
     [HttpGet]
     [Authorize(Roles = "Admin,Manager,User")]

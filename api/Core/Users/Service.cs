@@ -19,7 +19,7 @@ namespace api
         throw new PasswordAndPasswordConfirmationIsNotEquals("Senha e Confirmação de senha não estão iguais.");
       }
 
-      var userByEmail = await _context.User
+      var userByEmail = await _context.Users
       .Where(user => user.Email.ToLower() == dto.Email.ToLower())
       .FirstOrDefaultAsync();
       if (userByEmail != null)
@@ -37,7 +37,7 @@ namespace api
     }
     public async Task<UserDto> FindUserById(int userId)
     {
-      User user = await _context.User
+      User user = await _context.Users
       .Where(user => user.Id == userId)
       .FirstOrDefaultAsync();
       if (user == null)
@@ -49,7 +49,7 @@ namespace api
 
     public async Task<UserDto> FindUserByEmail(string email)
     {
-      User user = await _context.User
+      User user = await _context.Users
       .Where(user => user.Email.ToLower() == email)
       .FirstOrDefaultAsync();
       if (user == null)

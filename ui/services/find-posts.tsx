@@ -28,7 +28,6 @@ export const findPosts = (token: string) => async (): Promise<ServiceResult<Find
   }
 
   const body = await response.json();
-
   return {
     error: false,
     data: {

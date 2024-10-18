@@ -166,7 +166,15 @@ export const Post: React.FC<Props> = ({ post }) => {
           className="flex ps-5 pe-5 gap-3"
           variant='outline'
           onClick={onClickLike}>
-          <ThumbsUp size={15} />
+        
+          {
+            post.loggedUserLiked
+            ? (
+              <ThumbsUp size={15} className="stroke-red-500"  />
+            ) : (
+              <ThumbsUp size={15} className="stroke-slate-700" />
+            )
+          }
           <span>{post.likes}</span>
         </Button>
       </CardFooter>
