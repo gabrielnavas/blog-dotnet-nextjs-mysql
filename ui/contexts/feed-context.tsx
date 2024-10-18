@@ -7,6 +7,7 @@ import { AuthContext, AuthContextType } from "./auth-context";
 import { BadRequestException, UnauthorizedException } from "@/lib/exceptions";
 import { updatePostImage } from "@/services/update-post-image";
 import { findPosts } from "@/services/find-posts";
+import { incrementPostLike } from "@/services/increment-post-like";
 
 export type FeedContextType = {
   posts: Post[]
@@ -109,8 +110,31 @@ export const FeedProvider: React.FC<Props> = ({ children }) => {
   }, [token])
 
   const handleLike = useCallback(async (postId: string): Promise<void> => {
-    alert(postId);
-  }, [])
+    if (typeof token !== 'string' || token.length === 0) {
+      return;
+    }
+    const result = await incrementPostLike(token)({ postId });
+    if (result.error) {
+      if (result.IsUnauthorized) {
+        throw new UnauthorizedException()
+      } else {
+        throw new BadRequestException(result.message || 'Algo aconteceu. Tente novamente mais tarde');
+      }
+    } else {
+      // buscar por index, criar novas instâncias e atribuir  
+      // aparentemente resolve o problema de double like
+      // TODO: ver melhores formas de atualizar o estado
+      // TODO: Não deixar dar vários likes
+      const postIndex = data.posts.findIndex(post => post.id === postId);
+      const newPosts = [...data.posts];
+      newPosts[postIndex].likes++
+      setData(prev => ({
+        ...prev,
+        posts: newPosts
+      })
+      );
+    }
+  }, [token, data.posts])
 
 
   return (

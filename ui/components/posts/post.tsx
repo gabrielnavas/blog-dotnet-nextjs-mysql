@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 
 import Image from "next/image"
 
@@ -24,11 +24,13 @@ type Props = {
 export const Post: React.FC<Props> = ({ post }) => {
 
   const [imageUrl, setImageUrl] = React.useState<string>('')
+
   const { token } = React.useContext(AuthContext) as AuthContextType
   const { handleLike } = React.useContext(FeedContext) as FeedContextType
 
   const [isLoadingImage, setIsLoadingImage] = useState(false)
   const [isLoadingOwner, setIsLoadingOwner] = useState(false)
+  const [isLoadingLike, setIsLoadingLike] = useState(false)
 
   const [ownerPost, setOwnerPost] = useState<User | null>(null)
 
@@ -114,6 +116,17 @@ export const Post: React.FC<Props> = ({ post }) => {
     findOwner()
   }, [post.userId, token, route, toast])
 
+  const onClickLike = useCallback(async () => {
+    try {
+      setIsLoadingLike(true)
+      await handleLike(post.id)
+    } catch {
+
+    } finally {
+      setIsLoadingLike(false)
+    }
+  }, [handleLike, post.id])
+
 
   return (
     <Card className="w-[550px]">
@@ -149,9 +162,10 @@ export const Post: React.FC<Props> = ({ post }) => {
       </CardContent>
       <CardFooter className="flex justify-end">
         <Button
+          disabled={isLoadingLike}
           className="flex ps-5 pe-5 gap-3"
           variant='outline'
-          onClick={() => handleLike(post.id)}>
+          onClick={onClickLike}>
           <ThumbsUp size={15} />
           <span>{post.likes}</span>
         </Button>

@@ -137,5 +137,16 @@ namespace api
        ))
        .ToList();
     }
+
+    public async Task IncrementPost(int postId)
+    {
+      var post = _context.Post.Find(postId);
+      if (post == null)
+      {
+        throw new PostNotFoundException($"Post não encontrado com o id {postId}");
+      }
+      post.Likes = post.Likes + 1;
+      await _context.SaveChangesAsync();
+    }
   }
 }

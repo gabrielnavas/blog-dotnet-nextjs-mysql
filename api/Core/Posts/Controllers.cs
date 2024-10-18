@@ -10,7 +10,6 @@ namespace api
   public class PostController : ControllerBase
   {
     private readonly IPostService _postService;
-    private readonly IUserService _userService;
 
     public PostController(IPostService postService)
     {
@@ -24,7 +23,6 @@ namespace api
     {
       try
       {
-        // Pega o userId da claim e tenta converter para inteiro
         string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt))
@@ -35,10 +33,8 @@ namespace api
           });
         }
 
-        // Chama o serviço de criação de post com o userId e a request recebida
         var post = await _postService.CreatePost(userIdInt, request);
 
-        // Retorna o status 201 com o post criado
         return StatusCode(201, new
         {
           post
@@ -46,7 +42,6 @@ namespace api
       }
       catch (UserNotFoundException ex)
       {
-        // Captura exceção de usuário não encontrado
         return StatusCode(400, new
         {
           message = ex.Message
@@ -54,7 +49,33 @@ namespace api
       }
       catch (Exception ex)
       {
-        // Captura qualquer outra exceção
+        Console.WriteLine(ex);
+        return StatusCode(500, new
+        {
+          message = "Erro no servidor."
+        });
+      }
+    }
+
+
+    [HttpPatch("{postId}/like/increment")]
+    [Authorize(Roles = "Admin,Manager,User")]
+    public async Task<IActionResult> IncrementPost(int postId)
+    {
+      try
+      {
+        await _postService.IncrementPost(postId);
+        return StatusCode(204);
+      }
+      catch (UserNotFoundException ex)
+      {
+        return StatusCode(400, new
+        {
+          message = ex.Message
+        });
+      }
+      catch (Exception ex)
+      {
         Console.WriteLine(ex);
         return StatusCode(500, new
         {
@@ -70,7 +91,6 @@ namespace api
     {
       try
       {
-        // Pega o userId da claim e tenta converter para inteiro
         string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt))
@@ -81,10 +101,8 @@ namespace api
           });
         }
 
-        // Chama o serviço de criação de post com o userId e a request recebida
         var posts = await _postService.FindPosts(userIdInt);
 
-        // Retorna o status 201 com o post criado
         return StatusCode(200, new
         {
           posts
@@ -92,7 +110,6 @@ namespace api
       }
       catch (UserNotFoundException ex)
       {
-        // Captura exceção de usuário não encontrado
         return StatusCode(400, new
         {
           message = ex.Message
@@ -100,7 +117,6 @@ namespace api
       }
       catch (Exception ex)
       {
-        // Captura qualquer outra exceção
         Console.WriteLine(ex);
         return StatusCode(500, new
         {
