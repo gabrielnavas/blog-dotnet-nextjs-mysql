@@ -4,7 +4,6 @@ import React, { useCallback, useContext } from "react";
 import { Card, CardContent } from "../ui/card";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
-import { Image } from "lucide-react";
 
 import { z } from 'zod'
 import { FormProvider, useForm } from "react-hook-form";
@@ -14,6 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { FeedContext, FeedContextType } from "@/contexts/feed-context";
 import { BadRequestException, UnauthorizedException } from "@/lib/exceptions";
+import Image from "next/image";
+import { ImageIcon } from "lucide-react";
 
 const formSchema = z.object({
   content: z.string({ message: 'Digite o que está pensando.' })
@@ -112,12 +113,15 @@ export const NewPostForm: React.FC = () => {
                 accept="image/*"
                 onChange={handleImageChange}
               />
-              <Button disabled={isLoadingNewPost}
+              <Button variant='outline' disabled={isLoadingNewPost}
                 type="button" onClick={() => ref.current?.click()}>
-                <Image />
+                <ImageIcon />
               </Button>
               <Button
-                disabled={isLoadingNewPost || content.length === 0}
+                disabled={
+                  isLoadingNewPost
+                  || (content !== undefined && content.length === 0)
+                }
                 className="font-semibold">Postar</Button>
             </div>
           </form>
@@ -125,7 +129,10 @@ export const NewPostForm: React.FC = () => {
 
         {image && (
           <div className="pt-5">
-            <img src={URL.createObjectURL(image)} alt="Imagem selecionada" className="max-w-full h-auto" />
+            <Image
+              src={URL.createObjectURL(image)} 
+              alt="Imagem selecionada" 
+              className="max-w-full h-auto" />
           </div>
         )}
       </CardContent>
