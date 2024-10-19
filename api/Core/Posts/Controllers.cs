@@ -1,3 +1,4 @@
+using System.Drawing;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -59,7 +60,7 @@ namespace api
 
 
     [HttpPatch("{postId}/like")]
-    [Authorize(Roles = "Admin,Manager,User")]
+    // [Authorize(Roles = "Admin,Manager,User")]
     public async Task<IActionResult> TogglePostLike(int postId)
     {
       try
@@ -95,22 +96,20 @@ namespace api
     }
 
     [HttpGet]
-    [Authorize(Roles = "Admin,Manager,User")]
-    public async Task<IActionResult> FindPosts()
+    // [Authorize(Roles = "Admin,Manager,User")]
+    public async Task<IActionResult> FindPosts(int page = 0, int size = 10)
     {
       try
       {
-        string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int userIdInt))
+        // find post by user id or anonymous
+        int? userId = null;
+        var claimsUser = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (claimsUser != null && !string.IsNullOrEmpty(claimsUser.Value))
         {
-          return StatusCode(400, new
-          {
-            message = "Invalid user ID in the token."
-          });
+          userId = int.Parse(claimsUser.Value);
         }
 
-        var posts = await _postService.FindPosts(userIdInt);
+        var posts = await _postService.FindPosts(userId, page, size);
 
         return StatusCode(200, new
         {
@@ -161,7 +160,7 @@ namespace api
     }
 
     [HttpGet("{postId}/image")]
-    [Authorize(Roles = "Admin,Manager,User")]
+    // [Authorize(Roles = "Admin,Manager,User")]
     public async Task<IActionResult> DownloadImage(int postId)
     {
       try

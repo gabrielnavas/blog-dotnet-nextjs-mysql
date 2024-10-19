@@ -55,7 +55,7 @@ export const FeedProvider: React.FC<Props> = ({ children }) => {
 
 
   const handleLoadPosts = useCallback(async () => {
-    if (typeof token !== 'string' || token.length === 0) {
+    if (typeof token !== 'string') {
       return
     }
     const result = await findPosts(token)()
@@ -121,10 +121,6 @@ export const FeedProvider: React.FC<Props> = ({ children }) => {
         throw new BadRequestException(result.message || 'Algo aconteceu. Tente novamente mais tarde');
       }
     } else {
-      // buscar por index, criar novas instâncias e atribuir  
-      // aparentemente resolve o problema de double like
-      // TODO: ver melhores formas de atualizar o estado
-      // TODO: Não deixar dar vários likes
       const postIndex = data.posts.findIndex(post => post.id === postId);
       const newPosts = [...data.posts];
       if (postIndex >= 0) {

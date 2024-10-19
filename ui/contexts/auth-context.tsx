@@ -17,7 +17,7 @@ export type AuthContextType = {
 const inititalData = {
   isAuth: false,
   user: null,
-  token: '',
+  token: null,
   isLoading: false
 } as AuthContextType
 
@@ -31,14 +31,22 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
 
   const [data, setData] = React.useState<AuthContextType>(inititalData)
 
+  // const {handleSignOut: handleSignOutPost} = useContext(FeedContext) as FeedContextType
+
   useEffect(() => {
     const token = localStorage.getItem("token")
     const user = localStorage.getItem("user")
     if (token && user) {
       setData(prev => ({
-        ...prev, token,
+        ...prev,
+        token,
         user: JSON.parse(user),
         isAuth: true
+      }))
+    } else {
+      setData(prev => ({
+        ...prev,
+        token: '',
       }))
     }
   }, [])
@@ -72,6 +80,7 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
   const handleSignOut = useCallback(() => {
     localStorage.clear()
     setData(({ ...inititalData }))
+    // handleSignOutPost()
   }, [])
 
   return (

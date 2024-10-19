@@ -1,5 +1,6 @@
 using System.Data.Entity;
 using System.Reflection;
+using Org.BouncyCastle.Security;
 
 namespace api
 {
@@ -123,19 +124,30 @@ namespace api
       return (file, post.ImageName);
     }
 
-    public async Task<List<PostDto>> FindPosts(int userId)
+    public async Task<List<PostDto>> FindPosts(int? loggedUserId, int page, int size)
     {
+      if (size > 20)
+      {
+        throw new InvalidParameterException("O tamanho da página deve ter no máximo 20 itens.");
+      }
+      if (size <= 0)
+      {
+        throw new InvalidParameterException("O tamanho da página deve ser positivo.");
+      }
+
+      page = page == 0 ? page : (page - 1) * size;
       return _context.Posts
-      .Where(post => post.UserId == userId)
       .OrderByDescending(post => post.Id)
-      .Skip(0)
-      .Take(10)
+      .Skip(page)
+      .Take(size)
       .Select(post => new PostDto(
          post.Id,
          post.Content,
          post.UserId,
          post.Likes,
-         post.PostLikes.Where(postLike => postLike.UserId == userId).Count() > 0
+         loggedUserId != null
+         ? post.PostLikes.Where(postLike => postLike.UserId == loggedUserId).Count() > 0
+         : false
        ))
        .ToList();
     }

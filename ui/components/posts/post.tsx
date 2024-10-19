@@ -16,6 +16,7 @@ import { Loading } from "@/components/loading"
 import { ThumbsUp } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
+import { AuthModal } from "../auth/auth-modal"
 
 type Props = {
   post: PostModel
@@ -23,9 +24,11 @@ type Props = {
 
 export const Post: React.FC<Props> = ({ post }) => {
 
+  const [showSignInModal, setShowSignModal] = useState(false)
+
   const [imageUrl, setImageUrl] = React.useState<string>('')
 
-  const { token } = React.useContext(AuthContext) as AuthContextType
+  const { token, isAuth } = React.useContext(AuthContext) as AuthContextType
   const { handleLike } = React.useContext(FeedContext) as FeedContextType
 
   const [isLoadingImage, setIsLoadingImage] = useState(false)
@@ -39,10 +42,6 @@ export const Post: React.FC<Props> = ({ post }) => {
 
   React.useEffect(() => {
     const loadPostImage = async () => {
-      if (typeof token !== 'string' || token.length === 0) {
-        return
-      }
-
       try {
         setIsLoadingImage(true)
         const result = await downloadPostImage(token)({ postId: post.id })
@@ -73,10 +72,6 @@ export const Post: React.FC<Props> = ({ post }) => {
 
   useEffect(() => {
     const findOwner = async () => {
-      if (typeof token !== 'string' || token.length === 0) {
-        return
-      }
-
       try {
         setIsLoadingOwner(true)
         const result = await findUserById(token)({ userId: post.userId })
@@ -117,6 +112,10 @@ export const Post: React.FC<Props> = ({ post }) => {
   }, [post.userId, token, route, toast])
 
   const onClickLike = useCallback(async () => {
+    if (!isAuth) {
+      setShowSignModal(true)
+      return;
+    }
     try {
       setIsLoadingLike(true)
       await handleLike(post.id)
@@ -125,12 +124,15 @@ export const Post: React.FC<Props> = ({ post }) => {
     } finally {
       setIsLoadingLike(false)
     }
-  }, [handleLike, post.id])
+  }, [handleLike, post.id, isAuth])
 
 
   return (
     <Card className="w-[550px]">
       <CardContent className="flex flex-col gap-4 p-5">
+        <AuthModal
+          isOpen={showSignInModal}
+          onOpenChange={open => setShowSignModal(open)} />
         {
           isLoadingOwner
             ? (
@@ -166,14 +168,13 @@ export const Post: React.FC<Props> = ({ post }) => {
           className="flex ps-5 pe-5 gap-3"
           variant='outline'
           onClick={onClickLike}>
-        
           {
             post.loggedUserLiked
-            ? (
-              <ThumbsUp size={15} className="stroke-red-500"  />
-            ) : (
-              <ThumbsUp size={15} className="stroke-slate-700" />
-            )
+              ? (
+                <ThumbsUp size={15} className="stroke-red-500" />
+              ) : (
+                <ThumbsUp size={15} className="stroke-slate-700" />
+              )
           }
           <span>{post.likes}</span>
         </Button>

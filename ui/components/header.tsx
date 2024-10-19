@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useCallback, useContext } from "react"
+import { useCallback, useContext } from "react"
 import { LogOutIcon, Moon, Rss, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 
@@ -22,6 +22,7 @@ import { AuthContext, AuthContextType } from "@/contexts/auth-context"
 import { Avatar, AvatarImage } from "@radix-ui/react-avatar"
 import { AvatarFallback } from "./ui/avatar"
 import { useToast } from "@/hooks/use-toast"
+import Link from "next/link"
 
 
 
@@ -41,13 +42,14 @@ export const Header: React.FC = () => {
     })
   }, [handleSignOut, route, toast])
 
+
   return (
     <Card>
       <CardContent className="flex justify-between items-center ps-5 pe-5 pt-3 pb-3">
         <div className="flex">
           <h2 className="flex gap-2 items-center scroll-m-20 border-b pb-1 text-3xl font-semibold tracking-tight first:mt-0">
             <Rss />
-            Fofoca News
+            <Link href='/'>Fofoca News</Link>
           </h2>
         </div>
         <div className="flex gap-4">
@@ -73,39 +75,38 @@ export const Header: React.FC = () => {
           </DropdownMenu>
           <div>
             {
-              isAuth
-                ? (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
+              isAuth ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
 
-                      <Avatar className="cursor-pointer">
-                        <AvatarImage src="#" alt="@shadcn" />
-                        <AvatarFallback className="p-2">{`${user!.fullname[0]}${user!.fullname[1]}`}</AvatarFallback>
-                      </Avatar>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56">
-                      <DropdownMenuLabel>Opções</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuGroup>
-                        <DropdownMenuItem className="cursor-pointer">
-                          <User className="mr-2 h-4 w-4" />
-                          <span>Profile</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuGroup>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuGroup>
-                        <DropdownMenuItem onClick={onClickSignOut} className="cursor-pointer">
-                          <LogOutIcon className="mr-2 h-4 w-4" />
-                          <span>Logout</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuGroup>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                ) : (
-                  <Button onClick={() => route.push('/signin')} disabled={isLoading}>
-                    Entrar
-                  </Button>
-                )
+                    <Avatar className="cursor-pointer">
+                      <AvatarImage src="#" alt="@shadcn" />
+                      <AvatarFallback className="p-2">{`${user!.fullname[0]}${user!.fullname[1]}`}</AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56">
+                    <DropdownMenuLabel>Opções</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Profile</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem onClick={onClickSignOut} className="cursor-pointer">
+                        <LogOutIcon className="mr-2 h-4 w-4" />
+                        <span>Logout</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Button onClick={() => route.push('/signin')} disabled={isLoading}>
+                  Entrar
+                </Button>
+              )
             }
           </div>
         </div>

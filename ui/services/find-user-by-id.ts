@@ -9,14 +9,18 @@ type FindUserByIdResult = {
   user: User
 }
 
-export const findUserById = (token: string) => async (params: FindUserByIdParams): Promise<ServiceResult<FindUserByIdResult>> => {
+export const findUserById = (token: string | null) => async (params: FindUserByIdParams): Promise<ServiceResult<FindUserByIdResult>> => {
   const url = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/user/${params.userId}`
+
+  const headers = new Headers();
+  headers.set('Accept', 'application/json')
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`)
+  }
+
   const response = await fetch(url, {
     method: "GET",
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json',
-    },
+    headers: headers,
   });
 
   if (response.status === 404) {

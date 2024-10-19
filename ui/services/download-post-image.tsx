@@ -10,14 +10,17 @@ type DownloadPostImageResult = {
 }
 
 
-export const downloadPostImage = (token: string) => async (params: DownloadPostImageParams): Promise<ServiceResult<DownloadPostImageResult | undefined>> => {
+export const downloadPostImage = (token: string | null) => async (params: DownloadPostImageParams): Promise<ServiceResult<DownloadPostImageResult | undefined>> => {
   const url = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/post/${params.postId}/image`
+
+  const headers = new Headers();
+  if(token) {
+    headers.set('Authorization', `Bearer ${token}`)
+  }
 
   const response = await fetch(url, {
     method: "GET",
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
+    headers,
   });
 
   if (response.status === 401 || response.status === 403) {

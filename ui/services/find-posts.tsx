@@ -4,14 +4,16 @@ type FindPostsResult = {
   posts: Post[]
 }
 
-export const findPosts = (token: string) => async (): Promise<ServiceResult<FindPostsResult>> => {
+export const findPosts = (token: string | null) => async (): Promise<ServiceResult<FindPostsResult>> => {
   const url = `${process.env.NEXT_PUBLIC_API_ENDPOINT}/post`
+  const headers = new Headers();
+  headers.set('Accept', 'application/json')
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
   const response = await fetch(url, {
     method: "GET",
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json',
-    },
+    headers,
   });
 
   if (response.status === 401 || response.status === 403) {

@@ -8,6 +8,6 @@ namespace api
     Task<PostDto> UpdatePostImage(int postId, IFormFile file);
 
     Task<(byte[] file, string imageName)> LoadPostImage(int postId);
-    Task<List<PostDto>> FindPosts(int userId);
+    Task<List<PostDto>> FindPosts(int? loggedUserId, int page, int size);
   }
 }

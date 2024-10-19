@@ -15,7 +15,7 @@ namespace api.Core.Users
         }
 
         [HttpGet("{userId}")]
-        [Authorize(Roles = "Admin,Manager,User")]
+        // [Authorize(Roles = "Admin,Manager,User")]
         public async Task<IActionResult> FindUserById(int userId)
         {
             try
