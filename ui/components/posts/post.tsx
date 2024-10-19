@@ -1,22 +1,23 @@
-import React, { useCallback, useContext } from "react"
-
 import Image from "next/image"
 
 import { AuthContext, AuthContextType } from "@/contexts/auth-context"
 
 import { Post as PostModel } from "@/services/models"
 
+import React, { useState } from "react"
 
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Loading } from "@/components/loading"
 import { Menu, ThumbsUp, Trash2 } from "lucide-react"
 import { AuthModal } from "../auth/auth-modal"
-import { usePostImage } from "./use-post-image"
+import { useLoadPostImage } from "./use-load-post-image"
 import { useFindOwner } from "./use-find-owner"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { useLike } from "./use-like"
-import { FeedContext, FeedContextType } from "@/contexts/feed-context"
+import { useRemovePost } from "./use-remove-post"
+import { ShieldRemovePost } from "./shield-remove"
+import { PostContainer } from "./post-container"
 
 type Props = {
   post: PostModel
@@ -26,10 +27,11 @@ export const Post: React.FC<Props> = ({ post }) => {
 
   const { isAuth } = React.useContext(AuthContext) as AuthContextType
 
-  const { handleRemovePost } = useContext(FeedContext) as FeedContextType
-
-  const { imageUrl, isLoadingImage } = usePostImage(post.id);
+  const { imageUrl, isLoadingImage } = useLoadPostImage(post.id);
   const { isLoadingOwner, ownerPost } = useFindOwner(post.userId);
+  const { removePostOnClick, isLoadingRemovePost } = useRemovePost(post.id);
+
+  const [openShieldRemovePost, isOpenShieldRemovePost] = useState(false);
 
   const {
     isLoadingLike,
@@ -38,18 +40,18 @@ export const Post: React.FC<Props> = ({ post }) => {
     setShowSignModal
   } = useLike(post.id)
 
-  const removePostOnClick = useCallback(async () => {
-    await handleRemovePost(post.id)
-  }, [handleRemovePost, post.id])
-
   return (
     <>
       <AuthModal
         isOpen={showSignInModal}
         onOpenChange={open => setShowSignModal(open)} />
 
+      <ShieldRemovePost
+        onOpenChange={open => isOpenShieldRemovePost(open)}
+        open={openShieldRemovePost}
+        callback={removePostOnClick} />
 
-      <Card className="w-[550px]">
+      <PostContainer>
         <CardHeader>
           <div className="flex justify-between">
             {isLoadingOwner
@@ -64,7 +66,7 @@ export const Post: React.FC<Props> = ({ post }) => {
             {isAuth && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline">
+                  <Button disabled={isLoadingRemovePost} variant="outline">
                     <Menu />
                   </Button>
                 </DropdownMenuTrigger>
@@ -73,7 +75,7 @@ export const Post: React.FC<Props> = ({ post }) => {
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
                     <DropdownMenuItem
-                      onClick={removePostOnClick}
+                      onClick={() => isOpenShieldRemovePost(true)}
                       className="flex gap-3 cursor-pointer">
                       <Trash2 className="stroke-red-600" size={19} />
                       <span>Remover</span>
@@ -106,7 +108,7 @@ export const Post: React.FC<Props> = ({ post }) => {
         </CardContent>
         <CardFooter className="flex justify-end">
           <Button
-            disabled={isLoadingLike}
+            disabled={isLoadingLike || isLoadingRemovePost}
             className="flex ps-5 pe-5 gap-3"
             variant='outline'
             onClick={onClickLike}>
@@ -119,7 +121,7 @@ export const Post: React.FC<Props> = ({ post }) => {
             <span>{post.likes}</span>
           </Button>
         </CardFooter>
-      </Card>
+      </PostContainer>
     </>
   )
 }

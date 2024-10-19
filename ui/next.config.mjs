@@ -3,7 +3,7 @@ const nextConfig = {
   images: {
     localPatterns: [
       {
-        pathname: 'blob:http://localhost:3000/*',
+        pathname: '/**',
       }
     ]
   }

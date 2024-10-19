@@ -11,6 +11,8 @@ import { FeedContext, FeedContextType } from "@/contexts/feed-context";
 import { BadRequestException, UnauthorizedException } from "@/lib/exceptions";
 
 import { Loading } from "@/components/loading";
+import { PostMessage } from "../posts/post-message";
+import { AuthContext, AuthContextType } from "@/contexts/auth-context";
 
 export const FeedPosts: FC = () => {
   const {
@@ -19,6 +21,8 @@ export const FeedPosts: FC = () => {
     setIsLoadingFindPosts,
     isLoadingFindPosts
   } = React.useContext(FeedContext) as FeedContextType
+
+  const {isAuth} = React.useContext(AuthContext) as AuthContextType
 
   const { toast } = useToast();
   const route = useRouter();
@@ -61,7 +65,15 @@ export const FeedPosts: FC = () => {
         isLoadingFindPosts ? (
           <Loading description="Carregando posts..." />
         ) : (
-          posts.map(post => <Post key={post.id} post={post} />)
+          posts && posts.length === 0 ? (
+            isAuth ? (
+              <PostMessage message="Faça o primeiro post..." />
+            ) : (
+              <PostMessage message="Nenhum post disponível..." />
+            )
+          ) : (
+            posts.map(post => <Post key={post.id} post={post} />)
+          )
         )
       }
     </div>

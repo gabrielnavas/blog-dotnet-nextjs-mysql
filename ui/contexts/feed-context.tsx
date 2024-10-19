@@ -8,7 +8,10 @@ import { updatePostImage } from "@/services/update-post-image";
 import { findPosts } from "@/services/find-posts";
 import { togglePostLike } from "@/services/toggle-post-like";
 
-import { BadRequestException, UnauthorizedException } from "@/lib/exceptions";
+import {
+  BadRequestException,
+  UnauthorizedException
+} from "@/lib/exceptions";
 
 import { AuthContext, AuthContextType } from "./auth-context";
 import { removePost } from "@/services/remove-post";
@@ -159,8 +162,18 @@ export const FeedProvider: React.FC<Props> = ({ children }) => {
   }, [token, data.posts])
 
   const handleRemovePost = useCallback(async (postId: string) => {
-    if(token) {
-      await removePost(token)({postId})
+    if (!token) {
+      return
+    }
+
+    const result = await removePost(token)({ postId })
+
+    if (result.IsUnauthorized) {
+      throw new UnauthorizedException(result.message || 'Sem autorização.')
+    } else if (result.error) {
+      throw new BadRequestException(result.message || 'Algo aconteceu!')
+
+    } else {
       setData(prev => ({
         ...prev,
         posts: prev.posts.filter(post => post.id !== postId)

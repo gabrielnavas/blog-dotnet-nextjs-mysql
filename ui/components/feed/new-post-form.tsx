@@ -44,10 +44,10 @@ export const NewPostForm: React.FC = () => {
 
   const content = form.watch('content')
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     setImage(file)
-  };
+  }, [])
 
   const onSubmit = useCallback(async ({ content }: FormSchema) => {
     try {
@@ -133,7 +133,10 @@ export const NewPostForm: React.FC = () => {
             <Image
               src={URL.createObjectURL(image)} 
               alt="Imagem selecionada" 
-              className="max-w-full h-auto" />
+              className="w-[100%] h-auto" // Using tailwindcss
+              width={0}
+              height={0}
+              />
           </div>
         )}
       </CardContent>
