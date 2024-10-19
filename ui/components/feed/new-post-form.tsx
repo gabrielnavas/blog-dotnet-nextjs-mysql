@@ -31,10 +31,16 @@ export const NewPostForm: React.FC = () => {
     resolver: zodResolver(formSchema)
   })
 
-  const { handleNewPost, isLoadingNewPost, setIsLoadingNewPost } = useContext(FeedContext) as FeedContextType
+  const {
+    handleNewPost,
+    isLoadingNewPost,
+    setIsLoadingNewPost
+  } = useContext(FeedContext) as FeedContextType
 
   const { toast } = useToast();
   const route = useRouter()
+
+  const content = form.watch('content')
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -106,10 +112,13 @@ export const NewPostForm: React.FC = () => {
                 accept="image/*"
                 onChange={handleImageChange}
               />
-              <Button disabled={isLoadingNewPost} type="button" onClick={() => ref.current?.click()}>
+              <Button disabled={isLoadingNewPost}
+                type="button" onClick={() => ref.current?.click()}>
                 <Image />
               </Button>
-              <Button className="font-semibold">Postar</Button>
+              <Button
+                disabled={isLoadingNewPost || content.length === 0}
+                className="font-semibold">Postar</Button>
             </div>
           </form>
         </FormProvider>
