@@ -1,21 +1,24 @@
 'use client'
 
 import React, { useCallback, useContext } from "react";
-import { Card, CardContent } from "../ui/card";
-import { Textarea } from "../ui/textarea";
-import { Button } from "../ui/button";
-
 import { z } from 'zod'
 import Image from "next/image";
-
-import { FormProvider, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
-import { useToast } from "@/hooks/use-toast";
+import { ImageIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { FormProvider, useForm } from "react-hook-form";
+import { useToast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+
+import { Card, CardContent } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+
+import { 
+  FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage 
+} from "../ui/form";
 import { FeedContext, FeedContextType } from "@/contexts/feed-context";
 import { BadRequestException, UnauthorizedException } from "@/lib/exceptions";
-import { ImageIcon } from "lucide-react";
 
 const formSchema = z.object({
   content: z.string({ message: 'Digite o que está pensando.' })
@@ -25,8 +28,16 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>
 
+type ImageForm = {
+  image: File | undefined
+  localImageUrl: string
+}
+
 export const NewPostForm: React.FC = () => {
-  const [image, setImage] = React.useState<File | undefined>()
+  const [imageForm, setImageForm] = React.useState<ImageForm>({
+    image: undefined,
+    localImageUrl: ''
+  })
   const ref = React.useRef<HTMLInputElement>(null)
 
   const form = useForm<FormSchema>({
@@ -44,16 +55,25 @@ export const NewPostForm: React.FC = () => {
 
   const content = form.watch('content')
 
+  // TODO: quando eu digito esta atualizando a imagem também. Verifica o motivo.
   const handleImageChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    setImage(file)
+    if (file) {
+      setImageForm({
+        image: file,
+        localImageUrl: URL.createObjectURL(file)
+      })
+    }
   }, [])
 
   const onSubmit = useCallback(async ({ content }: FormSchema) => {
     try {
       setIsLoadingNewPost(true);
-      await handleNewPost(content, image);
-      setImage(undefined);
+      await handleNewPost(content, imageForm.image);
+      setImageForm({
+        image: undefined,
+        localImageUrl: '',
+      });
       form.reset({
         content: '',
       });
@@ -81,7 +101,7 @@ export const NewPostForm: React.FC = () => {
     } finally {
       setIsLoadingNewPost(false);
     }
-  }, [image, toast, handleNewPost, form, route, setIsLoadingNewPost])
+  }, [imageForm, toast, handleNewPost, form, route, setIsLoadingNewPost])
 
   return (
     <Card className="w-[550px]">
@@ -128,15 +148,15 @@ export const NewPostForm: React.FC = () => {
           </form>
         </FormProvider>
 
-        {image && (
+        {imageForm.image && (
           <div className="pt-5">
             <Image
-              src={URL.createObjectURL(image)} 
-              alt="Imagem selecionada" 
+              src={imageForm.localImageUrl}
+              alt="Imagem selecionada"
               className="w-[100%] h-auto" // Using tailwindcss
               width={0}
               height={0}
-              />
+            />
           </div>
         )}
       </CardContent>
