@@ -39,7 +39,7 @@ export const downloadPostImage = (token: string | null) => async (params: Downlo
   const blob: Blob = await response.blob();
 
   const imageUrl = URL.createObjectURL(blob);
-  if (isValidUrl(imageUrl)) {
+  if (isValidUrl(imageUrl) || imageUrl.includes("image")) {
     return {
       error: false,
       data: {

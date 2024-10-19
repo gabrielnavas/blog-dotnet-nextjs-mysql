@@ -5,6 +5,9 @@ import { signin } from "@/services/signin";
 import React, { useCallback, useEffect } from "react";
 
 export type AuthContextType = {
+  signUpRoute: string
+  signInRoute: string
+
   user: User | null
   token: string | null
   isAuth: boolean
@@ -12,13 +15,17 @@ export type AuthContextType = {
   handleSignIn: (email: string, password: string) => Promise<void>
   handleSignOut: () => void
   setIsLoading: (isLoading: boolean) => void
+
 }
 
 const inititalData = {
+  signUpRoute: '/signup',
+  signInRoute: '/signin',
+
   isAuth: false,
   user: null,
   token: null,
-  isLoading: false
+  isLoading: false,
 } as AuthContextType
 
 export const AuthContext = React.createContext<AuthContextType | null>(null)
@@ -82,6 +89,9 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{
+      signInRoute: data.signInRoute,
+      signUpRoute: data.signUpRoute,
+
       user: data.user,
       token: data.token,
       isLoading: data.isLoading,

@@ -168,7 +168,7 @@ namespace api
         var (file, imageName) = await _postService.LoadPostImage(postId);
         return File(file, "application/octet-stream", imageName);
       }
-      catch (PostNotFoundException ex)
+      catch (Exception ex) when (ex is PostNotFoundException || ex is ImagePostNotFound)
       {
         return StatusCode(400, new
         {
