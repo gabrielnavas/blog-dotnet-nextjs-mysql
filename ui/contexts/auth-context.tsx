@@ -31,8 +31,6 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
 
   const [data, setData] = React.useState<AuthContextType>(inititalData)
 
-  // const {handleSignOut: handleSignOutPost} = useContext(FeedContext) as FeedContextType
-
   useEffect(() => {
     const token = localStorage.getItem("token")
     const user = localStorage.getItem("user")
@@ -80,7 +78,6 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
   const handleSignOut = useCallback(() => {
     localStorage.clear()
     setData(({ ...inititalData }))
-    // handleSignOutPost()
   }, [])
 
   return (

@@ -1,13 +1,16 @@
 'use client'
 
+import React, { useCallback, useContext, useEffect } from "react";
+
 import { Post } from "@/services/models";
 import { newPost } from "@/services/new-post";
-import React, { useCallback, useContext } from "react";
-import { AuthContext, AuthContextType } from "./auth-context";
-import { BadRequestException, UnauthorizedException } from "@/lib/exceptions";
 import { updatePostImage } from "@/services/update-post-image";
 import { findPosts } from "@/services/find-posts";
 import { togglePostLike } from "@/services/toggle-post-like";
+
+import { BadRequestException, UnauthorizedException } from "@/lib/exceptions";
+
+import { AuthContext, AuthContextType } from "./auth-context";
 
 export type FeedContextType = {
   posts: Post[]
@@ -42,7 +45,7 @@ type Props = {
 export const FeedProvider: React.FC<Props> = ({ children }) => {
   const [data, setData] = React.useState<FeedContextType>(inititalData)
 
-  const { token } = useContext(AuthContext) as AuthContextType
+  const { token, isAuth } = useContext(AuthContext) as AuthContextType
 
   const setIsLoadingNewPost = useCallback((isLoading: boolean) => {
     setData(prev => ({ ...prev, isLoadingNewPost: isLoading }))
@@ -52,6 +55,19 @@ export const FeedProvider: React.FC<Props> = ({ children }) => {
   const setIsLoadingFindPosts = useCallback((isLoading: boolean) => {
     setData(prev => ({ ...prev, isLoadingFindPosts: isLoading }))
   }, [])
+
+  useEffect(() => {
+    const changeStateBySignOut = () => {
+      if (!isAuth) {
+        setData(prev => ({
+          ...prev,
+          posts: prev.posts.map(post => ({ ...post, loggedUserLiked: false })),
+        }))
+      }
+    }
+
+    changeStateBySignOut();
+  }, [isAuth])
 
 
   const handleLoadPosts = useCallback(async () => {
@@ -138,7 +154,6 @@ export const FeedProvider: React.FC<Props> = ({ children }) => {
       }));
     }
   }, [token, data.posts])
-
 
   return (
     <FeedContext.Provider value={{
