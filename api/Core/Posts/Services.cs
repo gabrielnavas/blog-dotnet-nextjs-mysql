@@ -88,6 +88,29 @@ namespace api
       );
     }
 
+    public async Task RemovePost(int postId)
+    {
+      using var transaction = _context.Database.BeginTransaction();
+
+      // Busca o post de forma assíncrona
+      var post = _context.Posts.FirstOrDefault(p => p.Id == postId);
+      if (post == null)
+      {
+        throw new PostNotFoundException($"Post {postId} não encontrado");
+      }
+
+      // remove likes before
+      var postLikes = _context.PostLikes.Where(pl => pl.PostId == postId);
+      _context.PostLikes.RemoveRange(postLikes);
+
+      // remove post
+      _context.Posts.Remove(post);
+      await _context.SaveChangesAsync();
+
+      transaction.Commit();
+    }
+
+
     public async Task<(byte[] file, string imageName)> LoadPostImage(int postId)
     {
       // Busca o post de forma assíncrona

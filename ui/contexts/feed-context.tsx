@@ -11,6 +11,7 @@ import { togglePostLike } from "@/services/toggle-post-like";
 import { BadRequestException, UnauthorizedException } from "@/lib/exceptions";
 
 import { AuthContext, AuthContextType } from "./auth-context";
+import { removePost } from "@/services/remove-post";
 
 export type FeedContextType = {
   posts: Post[]
@@ -23,6 +24,7 @@ export type FeedContextType = {
   handleLoadPosts: () => Promise<void>
   handleNewPost: (content: string, image?: File) => Promise<void>
   handleLike: (postId: string) => Promise<void>
+  handleRemovePost: (postId: string) => Promise<void>
 }
 
 const inititalData = {
@@ -34,6 +36,7 @@ const inititalData = {
   handleLoadPosts: () => Promise.resolve(),
   handleNewPost: () => Promise.resolve(),
   handleLike: () => Promise.resolve(),
+  handleRemovePost: () => Promise.resolve(),
 } as FeedContextType
 
 export const FeedContext = React.createContext<FeedContextType | null>(null)
@@ -155,6 +158,16 @@ export const FeedProvider: React.FC<Props> = ({ children }) => {
     }
   }, [token, data.posts])
 
+  const handleRemovePost = useCallback(async (postId: string) => {
+    if(token) {
+      await removePost(token)({postId})
+      setData(prev => ({
+        ...prev,
+        posts: prev.posts.filter(post => post.id !== postId)
+      }))
+    }
+  }, [token])
+
   return (
     <FeedContext.Provider value={{
       posts: data.posts,
@@ -168,6 +181,7 @@ export const FeedProvider: React.FC<Props> = ({ children }) => {
       handleLoadPosts,
       handleNewPost,
       handleLike,
+      handleRemovePost,
     }}>
       {children}
     </FeedContext.Provider>

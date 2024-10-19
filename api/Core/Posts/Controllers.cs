@@ -159,6 +159,32 @@ namespace api
       }
     }
 
+    [HttpDelete("{postId}")]
+    [Authorize(Roles = "Admin,Manager,User")]
+    public async Task<IActionResult> RemovePost(int postId)
+    {
+      try
+      {
+        await _postService.RemovePost(postId);
+        return StatusCode(204);
+      }
+      catch (PostNotFoundException ex)
+      {
+        return StatusCode(400, new
+        {
+          message = ex.Message
+        });
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex);
+        return StatusCode(500, new
+        {
+          message = "Erro no servidor."
+        });
+      }
+    }
+
     [HttpGet("{postId}/image")]
     // [Authorize(Roles = "Admin,Manager,User")]
     public async Task<IActionResult> DownloadImage(int postId)

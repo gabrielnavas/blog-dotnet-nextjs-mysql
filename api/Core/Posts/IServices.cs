@@ -9,5 +9,7 @@ namespace api
 
     Task<(byte[] file, string imageName)> LoadPostImage(int postId);
     Task<List<PostDto>> FindPosts(int? loggedUserId, int page, int size);
+
+    Task RemovePost(int postId);
   }
 }

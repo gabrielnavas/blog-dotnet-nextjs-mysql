@@ -6,6 +6,8 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 
 import { z } from 'zod'
+import Image from "next/image";
+
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
@@ -13,7 +15,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { FeedContext, FeedContextType } from "@/contexts/feed-context";
 import { BadRequestException, UnauthorizedException } from "@/lib/exceptions";
-import Image from "next/image";
 import { ImageIcon } from "lucide-react";
 
 const formSchema = z.object({
